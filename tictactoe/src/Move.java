@@ -30,4 +30,8 @@ class Move
     public void setCol(int c){
         col = c;
     }
+
+    public String toString(){
+        return (char)('a'+col)+"-"+(row+1);
+    }
 }

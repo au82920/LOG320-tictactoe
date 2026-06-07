@@ -12,6 +12,7 @@ class CPUPlayer {
     // au début de votre MinMax ou Alpha Beta.
     private int numExploredNodes;
     private Mark mark;
+    private boolean lkjps = true;
 
     // Le constructeur reçoit en paramètre le
     // joueur MAX (X ou O)
@@ -30,23 +31,27 @@ class CPUPlayer {
     public ArrayList<Move> getNextMoveMinMax(Board board) {
         ArrayList<Move> moves = new ArrayList<>();
         numExploredNodes = 0;
-        if (board.isFull()) {
+
+        if (board.isFull())
             return moves;
-        }
+
         ArrayList<Move> possibleMoves = board.possibleMoves();
         int best = Integer.MIN_VALUE;
+
         for (Move move : possibleMoves) {
+            this.numExploredNodes++;
             board.play(move, this.mark);
             int score = board.evaluate(mark);
-            System.err.println(score);
+
             if (score == 100) {
                 moves.clear();
                 moves.add(move);
                 break;
             }
-            if (score == -1) {
-                score = evaluateNextMove(board, this.mark.getOpposite());
-            }
+            if (score == -1)
+                score = minMax(board, this.mark.getOpposite());
+
+            board.removeMove(move);
             if (score > best) {
                 moves.clear();
                 moves.add(move);
@@ -54,20 +59,16 @@ class CPUPlayer {
             } else if (best == score) {
                 moves.add(move);
             }
-            board.removeMove(move);
-            System.err.println(move.toString() + " - score: " + score);
-
         }
-        System.err.println(moves.get(0));
         return moves;
     }
 
-    private int evaluateNextMove(Board board, Mark currentMark) {
-        this.numExploredNodes++;
+    private int minMax(Board board, Mark currentMark) {
         int score = board.evaluate(this.mark);
         if (score != -1) {
             return score;
         }
+        this.numExploredNodes++;
 
         ArrayList<Move> possibleMoves = board.possibleMoves();
 
@@ -75,11 +76,10 @@ class CPUPlayer {
             int best = Integer.MIN_VALUE;
             for (Move move : possibleMoves) {
                 board.play(move, currentMark);
-                score = evaluateNextMove(board, this.mark.getOpposite());
-                if (score > best) {
-                    best = score;
-                }
+                score = minMax(board, this.mark.getOpposite());
                 board.removeMove(move);
+                if (score > best)
+                    best = score;
             }
             return best;
         } else {
@@ -87,11 +87,10 @@ class CPUPlayer {
             for (Move move : possibleMoves) {
 
                 board.play(move, currentMark);
-                score = evaluateNextMove(board, this.mark);
-                if (score < best) {
-                    best = score;
-                }
+                score = minMax(board, this.mark);
                 board.removeMove(move);
+                if (score < best)
+                    best = score;
             }
             return best;
         }
@@ -101,13 +100,81 @@ class CPUPlayer {
     // plusieurs coups possibles si et seuleument si plusieurs coups
     // ont le même score.
     public ArrayList<Move> getNextMoveAB(Board board) {
-        numExploredNodes = 0;
         ArrayList<Move> moves = new ArrayList<>();
+        numExploredNodes = 0;
+
+        if (board.isFull())
+            return moves;
+
+        ArrayList<Move> possibleMoves = board.possibleMoves();
+        int best = Integer.MIN_VALUE;
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
+
+        for (Move move : possibleMoves) {
+            this.numExploredNodes++;
+            board.play(move, this.mark);
+            int score = board.evaluate(mark);
+
+            if (score == 100) {
+                moves.clear();
+                moves.add(move);
+                break;
+            }
+
+            if (score == -1)
+                score = alphaBeta(board, this.mark.getOpposite(), alpha, beta);
+            board.removeMove(move);
+            if (score > best) {
+                moves.clear();
+                moves.add(move);
+                best = score;
+            } else if (best == score) {
+                moves.add(move);
+            }
+
+        }
         return moves;
     }
 
+    private int alphaBeta(Board board, Mark currentMark, int alpha, int beta) {
+        int score = board.evaluate(this.mark);
+        if (score != -1) {
+            return score;
+        }
+        this.numExploredNodes++;
+
+        ArrayList<Move> possibleMoves = board.possibleMoves();
+
+        if (currentMark == this.mark) {
+            int best = Integer.MIN_VALUE;
+            for (Move move : possibleMoves) {
+                board.play(move, currentMark);
+                score = alphaBeta(board, this.mark.getOpposite(), alpha, beta);
+                board.removeMove(move);
+                best = Math.max(best, score);
+                alpha = Math.max(alpha, best);
+                if (alpha >= beta)
+                    break;
+            }
+            return best;
+        } else {
+            int best = Integer.MAX_VALUE;
+            for (Move move : possibleMoves) {
+                board.play(move, currentMark);
+                score = alphaBeta(board, this.mark, alpha, beta);
+                board.removeMove(move);
+                best = Math.min(score, best);
+                beta = Math.min(beta, best);
+                if (alpha >= beta)
+                    break;
+            }
+            return best;
+        }
+    }
+
     public int testEvaluateNextMove(Board board, Mark mark) {
-        return evaluateNextMove(board, mark);
+        return minMax(board, mark);
     }
 
 }

@@ -30,6 +30,10 @@ class Board
         board[m.getRow()][m.getCol()] = Mark.EMPTY;
     }
 
+    public Mark getMark(int col, int row) {
+        return board[row][col];
+    }
+
     public ArrayList<Move> getPossibleMoves() {
         ArrayList<Move> possibleMoves = new ArrayList<>();
 

@@ -78,7 +78,7 @@ class Board {
         return board[col][row] == Mark.EMPTY;
     }
 
-    public void play(int row, int col, Mark mark) {
+    public void remove(int row, int col, Mark mark) {
         board[col][row] = mark;
     }
 

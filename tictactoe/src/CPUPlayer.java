@@ -43,7 +43,7 @@ class CPUPlayer {
 
                     int score = minMax(board, mark.getOpposite());
 
-                    board.play(row, col, Mark.EMPTY);
+                    board.remove(row, col, Mark.EMPTY);
 
                     if (score > bestScore) {
                         bestScore = score;
@@ -80,7 +80,7 @@ class CPUPlayer {
 
                     int score = alphaBeta(board, mark.getOpposite(), alpha, beta);
 
-                    board.play(row, col, Mark.EMPTY);
+                    board.remove(row, col, Mark.EMPTY);
 
                     if (score > bestScore) {
                         bestScore = score;
@@ -120,7 +120,7 @@ class CPUPlayer {
 
                         int moveScore = minMax(board, currentMark.getOpposite());
 
-                        board.play(row, col, Mark.EMPTY);
+                        board.remove(row, col, Mark.EMPTY);
 
                         bestScore = Math.max(bestScore, moveScore);
                     }
@@ -141,7 +141,7 @@ class CPUPlayer {
 
                         int moveScore = minMax(board, currentMark.getOpposite());
 
-                        board.play(row, col, Mark.EMPTY);
+                        board.remove(row, col, Mark.EMPTY);
 
                         bestScore = Math.min(bestScore, moveScore);
                     }
@@ -178,7 +178,7 @@ class CPUPlayer {
                                 alpha,
                                 beta);
 
-                        board.play(row, col, Mark.EMPTY);
+                        board.remove(row, col, Mark.EMPTY);
 
                         bestScore = Math.max(bestScore, moveScore);
                         alpha = Math.max(alpha, bestScore);
@@ -208,7 +208,7 @@ class CPUPlayer {
                                 alpha,
                                 beta);
 
-                        board.play(row, col, Mark.EMPTY);
+                        board.remove(row, col, Mark.EMPTY);
 
                         bestScore = Math.min(bestScore, moveScore);
                         beta = Math.min(beta, bestScore);
@@ -224,5 +224,4 @@ class CPUPlayer {
         }
     }
 
-    
 }
